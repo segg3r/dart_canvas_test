@@ -12,23 +12,20 @@ class SurviveGameStage extends Stage {
   SurviveGameStage(CanvasElement canvas) : super(canvas);
 
   init() async {
-    ResourceManager characterSpriteResourceManager = await _initializeCharacterSpriteResourceManager();
+    CharacterBitmapResourceManager characterBitmapResourceManager = await _initializeCharacterBitmapResourceManager();
 
-    BitmapData bodyData = characterSpriteResourceManager.getBitmapData(
-        'body001');
-    Bitmap body = new Bitmap(bodyData);
-    body.x = 25;
-    body.y = 25;
-    stage.addChild(body);
+    List<BitmapData> bodyBitmaps = characterBitmapResourceManager
+        .getCharacterBitmaps('body001');
+    CharacterFlipBook characterFlipBook = new CharacterFlipBook.fromBitmaps(
+        bodyBitmaps);
+    characterFlipBook.x = 25;
+    characterFlipBook.y = 25;
+    this.addChild(characterFlipBook);
+    this.juggler.add(characterFlipBook);
   }
 
-  Future<ResourceManager> _initializeCharacterSpriteResourceManager() async {
-    RGBAColor green = new RGBAColor.fromRGB(32, 156, 0);
-    TransparencyImageDataFilter transparencyFilter = new TransparencyImageDataFilter
-        .intoTransparentWhite(green);
-
-    FilteringResourceManager resourceManager = new FilteringResourceManager(
-        [transparencyFilter])
+  Future<CharacterBitmapResourceManager> _initializeCharacterBitmapResourceManager() async {
+    CharacterBitmapResourceManager resourceManager = new CharacterBitmapResourceManager()
       ..addBitmapData('body001', 'resources/image/character/body/001.png');
 
     return await resourceManager.load();

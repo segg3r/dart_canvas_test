@@ -7,3 +7,4 @@ import 'package:stagexl/stagexl.dart';
 import 'graphics.dart';
 
 part 'resources/filtering_resource_manager.dart';
+part 'resources/character_bitmap_resource_manager.dart';
