@@ -17,7 +17,8 @@ class CharacterBitmapResourceManager extends FilteringResourceManager {
     List<BitmapData> result = _getCachedBitmaps(name);
 
     if (result == null) {
-      result = _buildCharacterBitmaps(name);
+      List<BitmapData> characterBitmaps = _buildCharacterBitmaps(name);
+      result = _buildOffsetBitmaps(characterBitmaps);
       _cacheBitmaps(name, result);
     }
 
@@ -33,12 +34,32 @@ class CharacterBitmapResourceManager extends FilteringResourceManager {
     return _splitInFrames(basicBitmapData);
   }
 
+  List<BitmapData> _buildOffsetBitmaps(List<BitmapData> characterBitmaps) {
+    List<BitmapData> result = new List<BitmapData>();
+
+    for (BitmapData characterBitmap in characterBitmaps) {
+      BitmapData offsetBitmap = _buildOffsetBitmap(characterBitmap);
+      result.add(offsetBitmap);
+    }
+
+    return result;
+  }
+
+  BitmapData _buildOffsetBitmap(BitmapData characterBitmap) {
+    int offsetX = (characterBitmap.width / 2).round();
+    int offsetY = characterBitmap.height;
+    Math.Point offset = new Math.Point(offsetX, offsetY);
+    return BitmapUtil.withOffset(characterBitmap, offset);
+  }
+
   List<BitmapData> _splitInFrames(BitmapData bitmapData) {
     int width = bitmapData.width;
     int height = bitmapData.height;
 
-    int frameWidth = (width / CharacterFlipBook.IMAGE_HORIZONTAL_FRAMES).round();
-    int frameHeight = (height / CharacterFlipBook.IMAGE_VERTICAL_FRAMES).round();
+    int frameWidth = (width / CharacterFlipBook.IMAGE_HORIZONTAL_FRAMES)
+        .round();
+    int frameHeight = (height / CharacterFlipBook.IMAGE_VERTICAL_FRAMES)
+        .round();
 
     return bitmapData
         .sliceIntoFrames(frameWidth, frameHeight);

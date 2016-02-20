@@ -1,3 +1,4 @@
 + lists of bitmaps should be cached in resourceManager
-- character class
-    - walking logic
++ character class
+    + walking logic
++ offset for character bitmaps
