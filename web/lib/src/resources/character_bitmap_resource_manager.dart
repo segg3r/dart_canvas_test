@@ -37,8 +37,8 @@ class CharacterBitmapResourceManager extends FilteringResourceManager {
     int width = bitmapData.width;
     int height = bitmapData.height;
 
-    int frameWidth = (width / CharacterFlipBook.HORIZONTAL_FRAMES).round();
-    int frameHeight = (height / CharacterFlipBook.VERTICAL_FRAMES).round();
+    int frameWidth = (width / CharacterFlipBook.IMAGE_HORIZONTAL_FRAMES).round();
+    int frameHeight = (height / CharacterFlipBook.IMAGE_VERTICAL_FRAMES).round();
 
     return bitmapData
         .sliceIntoFrames(frameWidth, frameHeight);
