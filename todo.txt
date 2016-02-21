@@ -4,3 +4,4 @@
 + offset for character bitmaps
 + path resolver
 + 4 parts of character flip book
+- simple behavior to walk around

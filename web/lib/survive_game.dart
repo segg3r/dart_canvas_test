@@ -25,10 +25,14 @@ class SurviveGameStage extends Stage {
     };
     CharacterAnimation animation = new CharacterAnimation(characterFlipBooks);
 
+    Behavior walkingBehavior = new WalkingBehavior(6.0);
+    Math.Point position = new Math.Point(400, 300);
     GameCharacter gameCharacter =
-        new GameCharacter.withAnimation(animation);
-    gameCharacter.position = new Math.Point(400, 400);
-    gameCharacter.destination = new Math.Point(100, 100);
+        new GameCharacter.withAnimation(animation)
+        ..position = position
+        ..destination = position
+        ..behavior = walkingBehavior;
+
     this.addChild(gameCharacter);
     this.juggler.add(gameCharacter);
   }

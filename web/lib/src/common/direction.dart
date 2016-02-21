@@ -24,7 +24,7 @@ class Direction {
   static double betweenPoints(Math.Point from, Math.Point to) {
     double atan = Math.atan2(to.y - from.y, to.x - from.x);
     if (atan > 0) {
-      return Math.PI * 2 - atan;
+      return Math.PI * 2.0 - atan;
     } else if (atan < 0) {
       return -atan;
     } else {

@@ -51,8 +51,9 @@ class CharacterFlipBook extends DisplayObject implements Animatable {
   }
 
   void stop() {
-    FlipBook currentFlipBook = _getCurrentFlipBook();
-    currentFlipBook.gotoAndStop(STANDING_FRAME_INDEX);
+    for (FlipBook flipBook in _flipBooks.values) {
+      flipBook.gotoAndStop(STANDING_FRAME_INDEX);
+    }
   }
 
   FlipBook _getCurrentFlipBook() {
