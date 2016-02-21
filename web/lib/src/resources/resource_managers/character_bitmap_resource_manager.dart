@@ -3,19 +3,25 @@ part of survive_game.resources;
 class CharacterBitmapResourceManager extends FilteringResourceManager {
 
   static RGBAColor BACKGROUND_GREEN = new RGBAColor.fromRGB(32, 156, 0);
-  static TransparencyImageDataFilter CHARACTER_BITMAP_BACKGROUND_FILTER = new TransparencyImageDataFilter
-      .intoTransparentWhite(BACKGROUND_GREEN);
-  static List<ImageDataFilter> DEFAULT_FILTERS = [
-    CHARACTER_BITMAP_BACKGROUND_FILTER];
+  static TransparencyImageDataFilter CHARACTER_BITMAP_BACKGROUND_FILTER =
+    new TransparencyImageDataFilter.intoTransparentWhite(BACKGROUND_GREEN);
+  static List<ImageDataFilter> DEFAULT_FILTERS =
+    [ CHARACTER_BITMAP_BACKGROUND_FILTER ];
 
+  PathResolver _pathResolver;
   Map<String, List<BitmapData>> _characterBitmapsCache = new Map<String,
       List<BitmapData>>();
 
-  CharacterBitmapResourceManager() : super(DEFAULT_FILTERS);
+  CharacterBitmapResourceManager(this._pathResolver) : super(DEFAULT_FILTERS);
+
+  void addCharacterBitmapData(String name) {
+    String url = _pathResolver.resolvePath(name);
+    super.addBitmapData(name, url);
+  }
 
   List<BitmapData> getCharacterBitmaps(String name) {
-    List<BitmapData> result = _getCachedBitmaps(name);
 
+    List<BitmapData> result = _getCachedBitmaps(name);
     if (result == null) {
       List<BitmapData> characterBitmaps = _buildCharacterBitmaps(name);
       result = _buildOffsetBitmaps(characterBitmaps);

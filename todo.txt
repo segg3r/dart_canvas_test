@@ -2,3 +2,5 @@
 + character class
     + walking logic
 + offset for character bitmaps
+- path resolver
+- 4 parts of character flip book
