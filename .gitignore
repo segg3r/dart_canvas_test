@@ -21,8 +21,5 @@ doc/api/
 *.ipr
 *.iws
 
-# Project specific
-todo.txt
-
 # Atom
 .atom
