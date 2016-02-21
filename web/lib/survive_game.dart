@@ -15,31 +15,56 @@ class SurviveGameStage extends Stage {
   SurviveGameStage(CanvasElement canvas) : super(canvas);
 
   init() async {
-    CharacterBitmapResourceManager characterBitmapResourceManager =
-        await _initializeCharacterBitmapResourceManager();
-
-    List<BitmapData> bodyBitmaps =
-        characterBitmapResourceManager.getCharacterBitmaps(CHARACTER_SET_NAME);
-    CharacterFlipBook characterFlipBook =
-        new CharacterFlipBook.fromBitmaps(bodyBitmaps);
+    Map<CharacterPart, CharacterBitmapResourceManager>
+        characterPartsResourceManagers =
+        await _initializeCharacterPartsResourceManagers();
+    Map<CharacterPart, CharacterFlipBook> characterFlipBooks =
+        _getCharacterFlipBooks(
+            characterPartsResourceManagers, CHARACTER_SET_NAME);
+    CharacterAnimation animation = new CharacterAnimation(characterFlipBooks);
 
     GameCharacter gameCharacter =
-        new GameCharacter.withFlipBook(characterFlipBook);
+        new GameCharacter.withAnimation(animation);
     gameCharacter.position = new Math.Point(400, 400);
     gameCharacter.destination = new Math.Point(100, 100);
     this.addChild(gameCharacter);
     this.juggler.add(gameCharacter);
   }
 
-  Future<CharacterBitmapResourceManager>
-      _initializeCharacterBitmapResourceManager() async {
-    PathResolver bodyBitmapsPathResolver =
-        new DirectoryPathResolver.ofDirectory(
-            'resources/image/character/body', 'png');
-    CharacterBitmapResourceManager resourceManager =
-        new CharacterBitmapResourceManager(bodyBitmapsPathResolver)
-          ..addCharacterBitmapData(CHARACTER_SET_NAME);
+  Future<Map<CharacterPart, CharacterBitmapResourceManager>>
+      _initializeCharacterPartsResourceManagers() async {
+    Map<CharacterPart, CharacterBitmapResourceManager> resourceManagers =
+        new Map<CharacterPart, CharacterBitmapResourceManager>();
 
-    return await resourceManager.load();
+    for (CharacterPart characterPart in CharacterPart.VALUES) {
+      PathResolver characterPartPathResolver =
+          new DirectoryPathResolver.ofDirectory(
+              'resources/image/character/' + characterPart.directory, 'png');
+      CharacterBitmapResourceManager characterPartResourceManager =
+          new CharacterBitmapResourceManager(characterPartPathResolver);
+      characterPartResourceManager.addCharacterBitmapData(CHARACTER_SET_NAME);
+      resourceManagers[characterPart] = characterPartResourceManager;
+      await characterPartResourceManager.load();
+    }
+
+    return resourceManagers;
+  }
+
+  Map<CharacterPart, CharacterFlipBook> _getCharacterFlipBooks(
+      Map<CharacterPart,
+          CharacterBitmapResourceManager> characterPartsResourceManagers,
+      String characterSetName) {
+    Map<CharacterPart, CharacterFlipBook> result =
+        new Map<CharacterPart, CharacterFlipBook>();
+    for (CharacterPart characterPart in CharacterPart.VALUES) {
+      CharacterBitmapResourceManager resourceManager =
+          characterPartsResourceManagers[characterPart];
+      List<BitmapData> characterPartBitmaps =
+          resourceManager.getCharacterBitmaps(characterSetName);
+      CharacterFlipBook characterPartFlipBook =
+          new CharacterFlipBook.fromBitmaps(characterPartBitmaps);
+      result[characterPart] = characterPartFlipBook;
+    }
+    return result;
   }
 }

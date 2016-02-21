@@ -4,13 +4,13 @@ class GameCharacter extends DisplayObject implements Animatable {
 
   static final double DEFAULT_MOVEMENT_SPEED = 150.0;
 
-  CharacterFlipBook _flipBook;
+  CharacterAnimation _animation;
   Math.Point _destination;
   double _direction;
   double _speed = 0.0;
   double _movementSpeed = DEFAULT_MOVEMENT_SPEED;
 
-  GameCharacter.withFlipBook(this._flipBook);
+  GameCharacter.withAnimation(this._animation);
 
   @override
   bool advanceTime(num time) {
@@ -40,16 +40,16 @@ class GameCharacter extends DisplayObject implements Animatable {
 
   void _updateFlipBook(num time) {
     if (_speed > 0) {
-      _flipBook.play(_speed);
+      _animation.play(_speed);
     } else {
-      _flipBook.stop();
+      _animation.stop();
     }
-    _flipBook.advanceTime(time);
+    _animation.advanceTime(time);
   }
 
   @override
   void render(RenderState renderState) {
-    _flipBook.render(renderState);
+    _animation.render(renderState);
   }
 
   set destination(Math.Point destination) {
@@ -62,14 +62,14 @@ class GameCharacter extends DisplayObject implements Animatable {
 
   void _setDirection(double direction) {
     this._direction = direction;
-    _flipBook.direction = Direction.fromDirection(direction);
+    _animation.direction = Direction.fromDirection(direction);
   }
 
   set position(Math.Point position) {
     this.x = position.x;
     this.y = position.y;
-    _flipBook.x = position.x;
-    _flipBook.y = position.y;
+    _animation.x = position.x;
+    _animation.y = position.y;
   }
 
 }
