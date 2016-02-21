@@ -10,17 +10,19 @@ import 'src/graphics.dart';
 import 'src/logic.dart';
 
 class SurviveGameStage extends Stage {
-  static final CHARACTER_SET_NAME = '001';
+  static final String CHARACTER_IMAGES_DIRECTORY = 'resources/image/character';
 
   SurviveGameStage(CanvasElement canvas) : super(canvas);
 
   init() async {
-    Map<CharacterPart, CharacterBitmapResourceManager>
-        characterPartsResourceManagers =
-        await _initializeCharacterPartsResourceManagers();
-    Map<CharacterPart, CharacterFlipBook> characterFlipBooks =
-        _getCharacterFlipBooks(
-            characterPartsResourceManagers, CHARACTER_SET_NAME);
+    CharacterBitmapResourceManager characterPartResourceManager =
+        await _initializeCharacterResourceManager();
+    Map<CharacterPart, CharacterFlipBook> characterFlipBooks = {
+      CharacterPart.BODY : characterPartResourceManager.buildCharacterFlipBook(CharacterBitmapDescriptor.WHITE_BODY),
+      CharacterPart.ARMOR : characterPartResourceManager.buildCharacterFlipBook(CharacterBitmapDescriptor.PURPLE_CLOTH),
+      CharacterPart.FACE : characterPartResourceManager.buildCharacterFlipBook(CharacterBitmapDescriptor.WHITE_FACE_BLUE_EYES),
+      CharacterPart.HAIR : characterPartResourceManager.buildCharacterFlipBook(CharacterBitmapDescriptor.RED_HAIR)
+    };
     CharacterAnimation animation = new CharacterAnimation(characterFlipBooks);
 
     GameCharacter gameCharacter =
@@ -31,40 +33,14 @@ class SurviveGameStage extends Stage {
     this.juggler.add(gameCharacter);
   }
 
-  Future<Map<CharacterPart, CharacterBitmapResourceManager>>
-      _initializeCharacterPartsResourceManagers() async {
-    Map<CharacterPart, CharacterBitmapResourceManager> resourceManagers =
-        new Map<CharacterPart, CharacterBitmapResourceManager>();
+  Future<CharacterBitmapResourceManager>
+      _initializeCharacterResourceManager() async {
+    CharacterBitmapResourceManager resourceManager = new CharacterBitmapResourceManager(CHARACTER_IMAGES_DIRECTORY);
+    List<CharacterBitmapDescriptor> allCharacterBitmaps = CharacterBitmapDescriptor.VALUES;
+    resourceManager.initialize(allCharacterBitmaps);
+    await resourceManager.load();
 
-    for (CharacterPart characterPart in CharacterPart.VALUES) {
-      PathResolver characterPartPathResolver =
-          new DirectoryPathResolver.ofDirectory(
-              'resources/image/character/' + characterPart.directory, 'png');
-      CharacterBitmapResourceManager characterPartResourceManager =
-          new CharacterBitmapResourceManager(characterPartPathResolver);
-      characterPartResourceManager.addCharacterBitmapData(CHARACTER_SET_NAME);
-      resourceManagers[characterPart] = characterPartResourceManager;
-      await characterPartResourceManager.load();
-    }
-
-    return resourceManagers;
+    return resourceManager;
   }
 
-  Map<CharacterPart, CharacterFlipBook> _getCharacterFlipBooks(
-      Map<CharacterPart,
-          CharacterBitmapResourceManager> characterPartsResourceManagers,
-      String characterSetName) {
-    Map<CharacterPart, CharacterFlipBook> result =
-        new Map<CharacterPart, CharacterFlipBook>();
-    for (CharacterPart characterPart in CharacterPart.VALUES) {
-      CharacterBitmapResourceManager resourceManager =
-          characterPartsResourceManagers[characterPart];
-      List<BitmapData> characterPartBitmaps =
-          resourceManager.getCharacterBitmaps(characterSetName);
-      CharacterFlipBook characterPartFlipBook =
-          new CharacterFlipBook.fromBitmaps(characterPartBitmaps);
-      result[characterPart] = characterPartFlipBook;
-    }
-    return result;
-  }
 }

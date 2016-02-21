@@ -2,9 +2,6 @@ part of survive_game.resources;
 
 class DirectoryPathResolver implements PathResolver {
 
-  static final String PATH_SPLITTER = '/';
-  static final String EXTENSION_SPLITTER = '.';
-
   String _directory;
   String _extension;
 
@@ -12,7 +9,7 @@ class DirectoryPathResolver implements PathResolver {
 
   @override
   String resolvePath(String path) {
-    return _directory + PATH_SPLITTER + path + EXTENSION_SPLITTER + _extension;
+    return _directory + '/' + path + '.' + _extension;
   }
 
 }

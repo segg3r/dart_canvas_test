@@ -1,42 +1,81 @@
 part of survive_game.resources;
 
 class CharacterBitmapResourceManager extends FilteringResourceManager {
+  static final String CHARACTER_BITMAP_EXTENSION = 'png';
+  static final RGBAColor BACKGROUND_GREEN = new RGBAColor.fromRGB(32, 156, 0);
+  static final TransparencyImageDataFilter CHARACTER_BITMAP_BACKGROUND_FILTER =
+      new TransparencyImageDataFilter.intoTransparentWhite(BACKGROUND_GREEN);
+  static final List<ImageDataFilter> DEFAULT_FILTERS = [
+    CHARACTER_BITMAP_BACKGROUND_FILTER
+  ];
 
-  static RGBAColor BACKGROUND_GREEN = new RGBAColor.fromRGB(32, 156, 0);
-  static TransparencyImageDataFilter CHARACTER_BITMAP_BACKGROUND_FILTER =
-    new TransparencyImageDataFilter.intoTransparentWhite(BACKGROUND_GREEN);
-  static List<ImageDataFilter> DEFAULT_FILTERS =
-    [ CHARACTER_BITMAP_BACKGROUND_FILTER ];
+  String _bitmapsDirectory;
+  Map<CharacterPart, PathResolver> _characterPartResolversCache =
+      new Map<CharacterPart, PathResolver>();
+  Map<CharacterBitmapDescriptor, List<BitmapData>> _characterBitmapsCache =
+      new Map<CharacterBitmapDescriptor, List<BitmapData>>();
 
-  PathResolver _pathResolver;
-  Map<String, List<BitmapData>> _characterBitmapsCache = new Map<String,
-      List<BitmapData>>();
+  CharacterBitmapResourceManager(this._bitmapsDirectory)
+      : super(DEFAULT_FILTERS);
 
-  CharacterBitmapResourceManager(this._pathResolver) : super(DEFAULT_FILTERS);
-
-  void addCharacterBitmapData(String name) {
-    String url = _pathResolver.resolvePath(name);
-    super.addBitmapData(name, url);
+  void initialize(List<CharacterBitmapDescriptor> bitmapDescriptors) {
+    for (CharacterBitmapDescriptor bitmapDescriptor in bitmapDescriptors) {
+      PathResolver characterPartResolver =
+          _getCharacterPartResolver(bitmapDescriptor.characterPart);
+      String url = characterPartResolver.resolvePath(bitmapDescriptor.fileName);
+      String internalBitmapName = _buildInternalBitmapName(bitmapDescriptor);
+      super.addBitmapData(internalBitmapName, url);
+    }
   }
 
-  List<BitmapData> getCharacterBitmaps(String name) {
-
-    List<BitmapData> result = _getCachedBitmaps(name);
+  PathResolver _getCharacterPartResolver(CharacterPart characterPart) {
+    PathResolver result = _getCachedCharacterPartResolver(characterPart);
     if (result == null) {
-      List<BitmapData> characterBitmaps = _buildCharacterBitmaps(name);
+      result = new DirectoryPathResolver.ofDirectory(
+          _bitmapsDirectory + '/' + characterPart.directory,
+          CHARACTER_BITMAP_EXTENSION);
+      _cacheCharacterPartResolver(characterPart, result);
+    }
+    return result;
+  }
+
+  PathResolver _getCachedCharacterPartResolver(CharacterPart characterPart) {
+    return _characterPartResolversCache[characterPart];
+  }
+
+  void _cacheCharacterPartResolver(
+      CharacterPart characterPart, PathResolver pathResolver) {
+    _characterPartResolversCache[characterPart] = pathResolver;
+  }
+
+  CharacterFlipBook buildCharacterFlipBook(
+      CharacterBitmapDescriptor bitmapDescriptor) {
+    List<BitmapData> bitmaps = _getCharacterBitmaps(bitmapDescriptor);
+    return new CharacterFlipBook.fromBitmaps(bitmaps);
+  }
+
+  List<BitmapData> _getCharacterBitmaps(
+      CharacterBitmapDescriptor bitmapDescriptor) {
+    List<BitmapData> result = _getCachedBitmaps(bitmapDescriptor);
+    if (result == null) {
+      List<BitmapData> characterBitmaps =
+          _buildCharacterBitmaps(bitmapDescriptor);
       result = _buildOffsetBitmaps(characterBitmaps);
-      _cacheBitmaps(name, result);
+      _cacheBitmaps(bitmapDescriptor, result);
     }
 
     return result;
   }
 
-  List<BitmapData> _getCachedBitmaps(String name) {
-    return _characterBitmapsCache[name];
+  List<BitmapData> _getCachedBitmaps(
+      CharacterBitmapDescriptor bitmapDescriptor) {
+    return _characterBitmapsCache[bitmapDescriptor];
   }
 
-  List<BitmapData> _buildCharacterBitmaps(String name) {
-    BitmapData basicBitmapData = getBitmapData(name);
+  List<BitmapData> _buildCharacterBitmaps(
+      CharacterBitmapDescriptor bitmapDescriptor) {
+    String internalName = _buildInternalBitmapName(bitmapDescriptor);
+    BitmapData basicBitmapData = getBitmapData(internalName);
     return _splitInFrames(basicBitmapData);
   }
 
@@ -62,17 +101,22 @@ class CharacterBitmapResourceManager extends FilteringResourceManager {
     int width = bitmapData.width;
     int height = bitmapData.height;
 
-    int frameWidth = (width / CharacterFlipBook.IMAGE_HORIZONTAL_FRAMES)
-        .round();
-    int frameHeight = (height / CharacterFlipBook.IMAGE_VERTICAL_FRAMES)
-        .round();
+    int frameWidth =
+        (width / CharacterFlipBook.IMAGE_HORIZONTAL_FRAMES).round();
+    int frameHeight =
+        (height / CharacterFlipBook.IMAGE_VERTICAL_FRAMES).round();
 
-    return bitmapData
-        .sliceIntoFrames(frameWidth, frameHeight);
+    return bitmapData.sliceIntoFrames(frameWidth, frameHeight);
   }
 
-  void _cacheBitmaps(String name, List<BitmapData> result) {
-    _characterBitmapsCache[name] = result;
+  void _cacheBitmaps(
+      CharacterBitmapDescriptor bitmapDescriptor, List<BitmapData> result) {
+    _characterBitmapsCache[bitmapDescriptor] = result;
   }
 
+  String _buildInternalBitmapName(CharacterBitmapDescriptor bitmapDescriptor) {
+    return bitmapDescriptor.characterPart.directory +
+        ':' +
+        bitmapDescriptor.fileName;
+  }
 }
