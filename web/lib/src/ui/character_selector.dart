@@ -19,9 +19,26 @@ class CharacterSelector extends DisplayObject {
 
   void _renderGameCharacterPreview(
       RenderState renderState, GameCharacter gameCharacter, int index) {
-    Map<CharacterPart, Bitmap> preview = gameCharacter.animation.getPreview();
+    Map<CharacterPart, Bitmap> previewBitmaps =
+        _getGameCharacterPreview(gameCharacter);
+    _renderPreviewBitmaps(renderState, previewBitmaps, index);
+  }
 
-    Bitmap bodyBitmap = preview[CharacterPart.BODY];
+  Map<CharacterPart, Bitmap> _getGameCharacterPreview(
+      GameCharacter gameCharacter) {
+    Map<CharacterPart, BitmapData> preview =
+        gameCharacter.animation.getPreview();
+    Map<CharacterPart, Bitmap> previewBitmaps =
+        new Map<CharacterPart, Bitmap>();
+    for (CharacterPart characterPart in CharacterPart.VALUES) {
+      previewBitmaps[characterPart] = new Bitmap(preview[characterPart]);
+    }
+    return previewBitmaps;
+  }
+
+  void _renderPreviewBitmaps(RenderState renderState,
+      Map<CharacterPart, Bitmap> previewBitmaps, int index) {
+    Bitmap bodyBitmap = previewBitmaps[CharacterPart.BODY];
     num left = CHARACTER_SELECTOR_LEFT_OFFSET +
         index * bodyBitmap.bitmapData.width +
         bodyBitmap.bitmapData.renderTextureQuad.offsetRectangle.left;
@@ -31,7 +48,7 @@ class CharacterSelector extends DisplayObject {
         bodyBitmap.bitmapData.renderTextureQuad.offsetRectangle.top;
 
     for (CharacterPart characterPart in CharacterPart.inRenderingOrder()) {
-      Bitmap previewBitmap = preview[characterPart];
+      Bitmap previewBitmap = previewBitmaps[characterPart];
       previewBitmap.x = left;
       previewBitmap.y = top;
       renderState.renderObject(previewBitmap);
