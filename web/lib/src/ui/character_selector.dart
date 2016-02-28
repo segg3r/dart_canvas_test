@@ -1,10 +1,11 @@
 part of survive_game.ui;
 
 class CharacterSelector extends DisplayObject {
+  static final int CHARACTER_SELECTOR_LEFT_OFFSET = 5;
+  static final int CHARACTER_SELECTOR_BOTTOM_OFFSET = 5;
+
   Screen _screen;
   List<GameCharacter> _gameCharacters;
-  Map<GameCharacter, CharacterPreview> _characterPreviews =
-      new Map<GameCharacter, CharacterPreview>();
 
   CharacterSelector.withCharacters(this._screen, this._gameCharacters);
 
@@ -12,42 +13,28 @@ class CharacterSelector extends DisplayObject {
   void render(RenderState renderState) {
     for (int index = 0; index < _gameCharacters.length; index++) {
       GameCharacter gameCharacter = _gameCharacters[index];
-      _verifyAndRenderGameCharacterPreview(gameCharacter, index);
+      _renderGameCharacterPreview(renderState, gameCharacter, index);
     }
   }
 
-  void _verifyAndRenderGameCharacterPreview(
-      GameCharacter gameCharacter, int index) {
-    _verifyExistingPreview(gameCharacter);
-    _renderGameCharacterPreview(gameCharacter, index);
-  }
+  void _renderGameCharacterPreview(
+      RenderState renderState, GameCharacter gameCharacter, int index) {
+    Map<CharacterPart, Bitmap> preview = gameCharacter.animation.getPreview();
 
-  void _verifyExistingPreview(GameCharacter gameCharacter) {
-    CharacterAnimation animation = gameCharacter.animation;
-    Map<CharacterPart, BitmapData> previewBitmapImages = animation.getPreview();
-
-    CharacterPreview currentPreview = _characterPreviews[gameCharacter];
-    if (currentPreview == null) {
-      currentPreview = new CharacterPreview();
-      _characterPreviews[gameCharacter] = currentPreview;
-    }
-    currentPreview.updateAndPopulatePreview(this.parent, previewBitmapImages);
-  }
-
-  void _renderGameCharacterPreview(GameCharacter gameCharacter, int index) {
-    CharacterPreview preview = _characterPreviews[gameCharacter];
-
-    Bitmap bodyBitmap = preview.bitmaps[CharacterPart.BODY];
-    num left = 5 +
+    Bitmap bodyBitmap = preview[CharacterPart.BODY];
+    num left = CHARACTER_SELECTOR_LEFT_OFFSET +
         index * bodyBitmap.bitmapData.width +
         bodyBitmap.bitmapData.renderTextureQuad.offsetRectangle.left;
     num top = _screen.height -
-        5 -
+        CHARACTER_SELECTOR_BOTTOM_OFFSET -
         bodyBitmap.bitmapData.height +
         bodyBitmap.bitmapData.renderTextureQuad.offsetRectangle.top;
-    for (Bitmap previewBitmap in preview.bitmaps.values) {
+
+    for (CharacterPart characterPart in CharacterPart.inRenderingOrder()) {
+      Bitmap previewBitmap = preview[characterPart];
       previewBitmap.x = left;
       previewBitmap.y = top;
+      renderState.renderObject(previewBitmap);
     }
   }
 }

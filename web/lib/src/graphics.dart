@@ -9,7 +9,6 @@ import 'common.dart';
 part 'graphics/characters/character_flip_book.dart';
 part 'graphics/characters/character_animation.dart';
 part 'graphics/characters/character_part.dart';
-part 'graphics/characters/character_preview.dart';
 part 'graphics/characters/character_bitmap_descriptor.dart';
 part 'graphics/filters/image_data_filter.dart';
 part 'graphics/filters/transparency_image_data_filter.dart';

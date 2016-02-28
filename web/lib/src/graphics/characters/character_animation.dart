@@ -32,11 +32,11 @@ class CharacterAnimation extends DisplayObject implements Animatable {
     }
   }
 
-  Map<CharacterPart, BitmapData> getPreview() {
-    Map<CharacterPart, BitmapData> result = new Map<CharacterPart, BitmapData>();
+  Map<CharacterPart, Bitmap> getPreview() {
+    Map<CharacterPart, Bitmap> result = new Map<CharacterPart, Bitmap>();
     for (CharacterPart characterPart in CharacterPart.inRenderingOrder()) {
       BitmapData preview = _flipBooks[characterPart].preview;
-      result[characterPart] = preview;
+      result[characterPart] = new Bitmap(preview);
     }
     return result;
   }
