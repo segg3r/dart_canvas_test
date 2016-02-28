@@ -4,7 +4,7 @@ class BitmapUtil {
 
   static BitmapData withOffset(BitmapData bitmap, Math.Point offset) {
     Math.Rectangle<int> offsetRectangle = new Math.Rectangle(
-        offset.x, offset.y, 0, 0);
+        offset.x, offset.y, bitmap.width, bitmap.height);
     RenderTextureQuad sourceQuad = bitmap.renderTextureQuad;
     RenderTextureQuad offsetQuad = new RenderTextureQuad(
         sourceQuad.renderTexture, sourceQuad.sourceRectangle, offsetRectangle,

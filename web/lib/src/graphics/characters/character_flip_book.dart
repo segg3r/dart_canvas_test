@@ -19,6 +19,7 @@ class CharacterFlipBook extends DisplayObject implements Animatable {
 
   Map<Direction, FlipBook> _flipBooks;
   Direction _direction;
+  BitmapData _preview;
 
   CharacterFlipBook.fromBitmaps(List<BitmapData> bitmaps) {
     _flipBooks = _populateDirectionFlipBooks(bitmaps);
@@ -71,6 +72,10 @@ class CharacterFlipBook extends DisplayObject implements Animatable {
       int to = from + IMAGE_HORIZONTAL_FRAMES;
       int middleFrameIndex = from + STANDING_FRAME_INDEX;
 
+      if (direction == Direction.DOWN) {
+        _preview = bitmaps[middleFrameIndex];
+      }
+
       List<BitmapData> flipBookBitmaps = bitmaps.sublist(from, to);
       flipBookBitmaps.add(bitmaps[middleFrameIndex]);
 
@@ -83,5 +88,7 @@ class CharacterFlipBook extends DisplayObject implements Animatable {
   }
 
   set direction(Direction direction) => this._direction = direction;
+
+  get preview => _preview;
 
 }

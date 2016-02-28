@@ -85,4 +85,6 @@ class GameCharacter extends DisplayObject implements Animatable {
 
   set behavior(Behavior behavior) => this._behavior = behavior;
 
+  get animation => _animation;
+
 }

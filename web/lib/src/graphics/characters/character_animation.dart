@@ -32,6 +32,15 @@ class CharacterAnimation extends DisplayObject implements Animatable {
     }
   }
 
+  Map<CharacterPart, BitmapData> getPreview() {
+    Map<CharacterPart, BitmapData> result = new Map<CharacterPart, BitmapData>();
+    for (CharacterPart characterPart in CharacterPart.inRenderingOrder()) {
+      BitmapData preview = _flipBooks[characterPart].preview;
+      result[characterPart] = preview;
+    }
+    return result;
+  }
+
   set direction(Direction direction) {
     for (CharacterFlipBook flipBook in _getActiveFlipBooksInRenderingOrder()) {
       flipBook.direction = direction;
