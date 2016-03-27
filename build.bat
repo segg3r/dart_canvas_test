@@ -6,7 +6,7 @@ call rmdir electron_build /S /Q
 
 :: Resolve dependencies
 call npm install -g electron-packager
-call pub get
+call pub --trace get
 
 :: Compile Dart application
 call pub build
