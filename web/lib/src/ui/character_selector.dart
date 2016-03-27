@@ -1,6 +1,8 @@
 part of survive_game.ui;
 
 class CharacterSelector extends DisplayObject {
+  static final int MAX_CHARACTERS = 4;
+
   static final int CHARACTER_SELECTOR_LEFT_OFFSET = 5;
   static final int CHARACTER_SELECTOR_BOTTOM_OFFSET = 5;
 
@@ -14,16 +16,37 @@ class CharacterSelector extends DisplayObject {
       'Tahoma', 12, Color.Orange,
       bold: true, strokeColor: Color.Black, strokeWidth: 2);
 
+  static final int ZERO_KEY_CODE = 48;
+
   Screen _screen;
   List<GameCharacter> _gameCharacters;
+  int _selectedCharacterIndex;
 
-  CharacterSelector.withCharacters(this._screen, this._gameCharacters);
+  CharacterSelector.withCharacters(this._screen, this._gameCharacters) {
+    if (this._gameCharacters.length > 0) {
+      this._selectedCharacterIndex = 0;
+    }
+  }
 
   @override
   void render(RenderState renderState) {
     for (int index = 0; index < _gameCharacters.length; index++) {
       GameCharacter gameCharacter = _gameCharacters[index];
       _renderGameCharacterPreview(renderState, gameCharacter, index);
+    }
+  }
+
+  void handleKeyboardEvent(KeyboardEvent event) {
+    int keyCode = event.keyCode;
+    int numberPressed = keyCode - ZERO_KEY_CODE - 1;
+
+    if (numberPressed >= 0 && numberPressed < MAX_CHARACTERS) {
+      this._selectedCharacterIndex = numberPressed;
+    } else {
+      GameCharacter gameCharacter = _getSelectedGameCharacter();
+      if (gameCharacter != null) {
+        gameCharacter.handleKeyboardEvent(event);
+      }
     }
   }
 
@@ -71,10 +94,18 @@ class CharacterSelector extends DisplayObject {
     String indexText = (index + 1).toString();
 
     TextField textField = new TextField();
-    textField.defaultTextFormat = UNSELECTED_CHARACTER_TEXT_FORMAT;
+    textField.defaultTextFormat = index == this._selectedCharacterIndex
+        ? SELECTED_CHARACTER_TEXT_FORMAT
+        : UNSELECTED_CHARACTER_TEXT_FORMAT;
     textField.text = indexText;
     textField.x = left + CHARACTER_INDEX_PREVIEW_LEFT_OFFSET;
     textField.y = top + CHARACTER_INDEX_PREVIEW_TOP_OFFSET;
     renderState.renderObject(textField);
+  }
+
+  GameCharacter _getSelectedGameCharacter() {
+    return this._selectedCharacterIndex <= this._gameCharacters.length
+        ? this._gameCharacters[this._selectedCharacterIndex]
+        : null;
   }
 }

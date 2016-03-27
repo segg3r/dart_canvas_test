@@ -1,8 +1,8 @@
 part of survive_game.logic;
 
 class GameCharacter extends DisplayObject implements Animatable {
-
   static final double DEFAULT_MOVEMENT_SPEED = 150.0;
+  static final double KEYBOARD_MOVEMENT_OFFSET = 20.0;
 
   CharacterAnimation _animation;
   Math.Point _destination;
@@ -21,11 +21,30 @@ class GameCharacter extends DisplayObject implements Animatable {
     return true;
   }
 
+  void handleKeyboardEvent(KeyboardEvent event) {
+    _handleKeyboardMovement(event);
+  }
+
+  void _handleKeyboardMovement(KeyboardEvent event) {
+    int keyCode = event.keyCode;
+    String char = new String.fromCharCode(keyCode);
+    
+    if (char == 'W') {
+      this._destination = new Math.Point(this.x, this.y - KEYBOARD_MOVEMENT_OFFSET);
+    } else if (char == 'A') {
+      this._destination = new Math.Point(this.x - KEYBOARD_MOVEMENT_OFFSET, this.y);
+    } else if (char == 'S') {
+      this._destination = new Math.Point(this.x, this.y + KEYBOARD_MOVEMENT_OFFSET);
+    } else if (char == 'D') {
+      this._destination = new Math.Point(this.x + KEYBOARD_MOVEMENT_OFFSET, this.y);
+    }
+  }
+
   void _processBehavior(num time) {
     if (_behavior != null) {
       _behavior.advanceTime(time, this);
     }
-   }
+  }
 
   void _processMovement(num time) {
     Math.Point currentPoint = _getCurrentPoint();
@@ -34,7 +53,8 @@ class GameCharacter extends DisplayObject implements Animatable {
       if (_speed == 0.0) {
         _speed = _movementSpeed;
       }
-      double directionToDestination = Direction.betweenPoints(currentPoint, _destination);
+      double directionToDestination =
+          Direction.betweenPoints(currentPoint, _destination);
       _setDirection(directionToDestination);
 
       double finalX = this.x + time * _speed * Math.cos(_direction);
@@ -86,5 +106,4 @@ class GameCharacter extends DisplayObject implements Animatable {
   set behavior(Behavior behavior) => this._behavior = behavior;
 
   get animation => _animation;
-
 }

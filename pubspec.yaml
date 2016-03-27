@@ -9,8 +9,7 @@ environment:
 dependencies:
   browser: '>=0.10.0 <0.11.0'
   dart_to_js_script_rewriter: '^0.1.0'
-  stagexl: '^0.13.0'
-  start: any
+  stagexl: '0.13.5+1'
 
 transformers:
 - dart_to_js_script_rewriter

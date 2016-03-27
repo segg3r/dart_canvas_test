@@ -34,18 +34,21 @@ class SurviveGameStage extends Stage {
     };
     CharacterAnimation animation = new CharacterAnimation(characterFlipBooks);
 
-    Behavior walkingBehavior = new WalkingBehavior(6.0);
     Math.Point position = new Math.Point(400, 300);
     GameCharacter gameCharacter = new GameCharacter.withAnimation(animation)
-      ..position = position
-      ..destination = position
-      ..behavior = walkingBehavior;
+          ..position = position
+          ..destination = position;
     CharacterSelector characterSelector =
         new CharacterSelector.withCharacters(_screen, [gameCharacter]);
 
     this.addChild(gameCharacter);
     this.addChild(characterSelector);
     this.juggler.add(gameCharacter);
+    this.focus = this;
+
+    this.onKeyDown.listen((keyboardEvent) {
+      characterSelector.handleKeyboardEvent(keyboardEvent);
+    });
   }
 
   Future<CharacterBitmapResourceManager>
