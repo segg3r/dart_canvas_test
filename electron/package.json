@@ -1,0 +1,13 @@
+{
+  "name": "survive_game",
+  "version": "1.0.0",
+  "description": "Survive game in Dart",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron main.js"
+  },
+  "author": "segg3r",
+  "devDependencies": {
+    "electron-prebuilt": "^0.36.0"
+  }
+}
