@@ -21,5 +21,5 @@ call xcopy build\web\* electron_build /s
 :: Build Electron application
 cd electron_build
 call npm install
-call electron-packager . --platform=win32 --arch=all
+call electron-packager . --platform=win32 --arch=all --asar=true
 cd ../
