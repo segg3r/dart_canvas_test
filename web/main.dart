@@ -4,8 +4,6 @@ import 'package:stagexl/stagexl.dart';
 import 'lib/survive_game.dart';
 
 main() async {
-  window.onError.listen((ErrorEvent e) => print(e.message));
-  
   CanvasElement canvas = querySelector('#stage');
   SurviveGameStage stage = new SurviveGameStage(canvas);
   RenderLoop renderLoop = new RenderLoop();
